@@ -1,0 +1,152 @@
+---
+title: "Getting Started com fluxoescolar"
+author: "Vitor Pereira"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started com fluxoescolar}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+# Introdução
+
+O pacote `fluxoescolar` calcula cinco indicadores de fluxo escolar
+brasileiro --- abandono, evasão, promoção, repetência, não-progressão ---
+a partir do painel longitudinal da PNAD Contínua.
+
+# Pipeline completo
+
+## 1. Baixar microdados
+
+```{r baixar}
+library(fluxoescolar)
+
+# Cerca de 11 GB para 2012-2024. Reserve algumas horas.
+log <- baixar_pnadc(
+    dir_destino = "~/dados/pnadc",
+    anos = 2012:2024
+)
+
+table(log$status)
+```
+
+## 2. Parsear
+
+```{r parsear}
+parsear_pnadc(
+    dir_zips = "~/dados/pnadc",
+    dir_destino = "~/dados/pnadc_parsed",
+    formato = "rds"
+)
+```
+
+## 3. Harmonizar e empilhar
+
+```{r harmonizar}
+library(data.table)
+
+files <- list.files("~/dados/pnadc_parsed", pattern = "\\.rds$", full.names = TRUE)
+df_all <- rbindlist(lapply(files, function(f) {
+    harmonizar_pnadc(readRDS(f))
+}))
+
+dim(df_all)
+```
+
+## 4. Construir painel longitudinal
+
+```{r painel}
+painel <- construir_painel(df_all,
+                           min_visitas = 2,
+                           sexo_tol = 0.8,
+                           idade_tol = 0.8)
+table(painel$link_ok)
+```
+
+## 5. Calcular indicadores
+
+```{r calc_inter}
+# Entre-anos: promoção, repetência, evasão, não-progressão
+indicadores_inter <- calcular_indicadores(
+    painel,
+    tipo = "inter",
+    desagregacao = c("ano_t", "macroetapa"),
+    periodo = c(2012, 2024)
+)
+print(indicadores_inter)
+```
+
+```{r calc_intra}
+# Intra-ano: abandono
+indicadores_intra <- calcular_indicadores(
+    painel,
+    tipo = "intra",
+    desagregacao = c("ano_cal", "macroetapa"),
+    periodo = c(2012, 2024)
+)
+print(indicadores_intra)
+```
+
+## 6. Heterogeneidade socioeconômica
+
+```{r heterog}
+# Por quintil de renda (EM, 2018-2023)
+indicadores_renda <- calcular_indicadores(
+    painel,
+    tipo = "inter",
+    desagregacao = c("macroetapa", "quintil_renda"),
+    periodo = c(2018, 2023)
+)
+print(indicadores_renda[macroetapa == 3])  # EM
+```
+
+## 7. Visualizar
+
+```{r figuras}
+fig1 <- figura_serie_temporal(indicadores_inter)
+ggplot2::ggsave("F1_serie.pdf", fig1, width = 10, height = 7)
+
+fig2 <- figura_heterogeneidade(
+    indicadores_renda,
+    indicador = "flag_promocao",
+    subgrupo = "quintil_renda",
+    macroetapa = 3
+)
+ggplot2::ggsave("F2_gradiente.pdf", fig2, width = 7, height = 5)
+```
+
+## 8. Comparação com INEP (opcional)
+
+```{r inep}
+# Carregar tabelas oficiais INEP (taxa_transicao)
+# Disponíveis em https://www.gov.br/inep/.../taxas-de-transicao
+dados_inep <- fread("inep_taxas_transicao_2007_2022.csv")
+
+comparacao <- decompor_inep(
+    resultados_pnadc = indicadores_inter,
+    dados_inep = dados_inep
+)
+print(comparacao)
+```
+
+# Definições operacionais detalhadas
+
+Ver o working paper associado para definições completas:
+
+> Pereira, V. A. (2026). Indicadores de fluxo escolar via painel longitudinal da PNAD Contínua. Working paper UFRJ-IE.
+
+# Notas sobre o painel
+
+- O painel da PNADC tem 5 visitas por domicílio, uma por trimestre.
+- O atrito é cerca de 15-20% no horizonte de 5 trimestres.
+- A linkagem usa sexo + idade como validação (tolerância 1 ano).
+- Indivíduos com elo quebrado são marcados `link_ok = 0`.

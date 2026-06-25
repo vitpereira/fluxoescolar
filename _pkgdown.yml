@@ -1,0 +1,32 @@
+url: https://vitpereira.github.io/fluxoescolar/
+
+template:
+  bootstrap: 5
+
+reference:
+  - title: "Download e parsing"
+    desc: "Funções para obter e ler os microdados PNADC trimestral"
+    contents:
+      - baixar_pnadc
+      - parsear_pnadc
+  - title: "Construção do painel"
+    desc: "Harmonização e linkagem individual"
+    contents:
+      - harmonizar_pnadc
+      - construir_painel
+  - title: "Indicadores"
+    desc: "Cálculo dos cinco indicadores de fluxo"
+    contents:
+      - calcular_indicadores
+  - title: "Comparação com INEP"
+    contents:
+      - decompor_inep
+  - title: "Visualização"
+    contents:
+      - figura_serie_temporal
+      - figura_heterogeneidade
+
+articles:
+  - title: "Pipeline completo"
+    contents:
+      - getting-started

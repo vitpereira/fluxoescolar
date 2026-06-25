@@ -1,0 +1,46 @@
+Package: fluxoescolar
+Type: Package
+Title: Indicadores de Fluxo Escolar a partir da PNAD Contínua
+Version: 0.1.0
+Authors@R: person("Vitor", "Pereira",
+                  email = "vitor.pereira@ie.ufrj.br",
+                  role = c("aut", "cre"),
+                  comment = c(ORCID = "0000-0000-0000-0000"))
+Description: Calcula indicadores de fluxo escolar --- abandono (intra-ano),
+    evasao, promocao, repetencia e nao-progressao (entre-anos) --- a partir
+    do painel longitudinal de cinco trimestres da Pesquisa Nacional por
+    Amostra de Domicilios Continua (PNAD Continua / PNADC) do IBGE.
+    Constroi identificadores de individuo entre visitas, harmoniza variaveis
+    entre versoes da PNADC, e produz tabelas e figuras dos indicadores
+    desagregados por serie, idade, sexo, raca/cor, quintil de renda
+    domiciliar per capita, e perfil de elegibilidade ao Bolsa Familia.
+    Inspirado na tradicao PROFLUXO (Fletcher, Ribeiro e Klein, 1985-2006),
+    porem com identificacao via observacao direta em vez de modelagem
+    cross-sectional.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Language: pt-BR
+LazyData: true
+Depends:
+    R (>= 4.0.0)
+Imports:
+    data.table (>= 1.14.0),
+    dplyr,
+    tidyr,
+    readr,
+    ggplot2,
+    scales,
+    purrr,
+    fs,
+    glue,
+    rlang
+Suggests:
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown,
+    arrow
+RoxygenNote: 7.3.0
+URL: https://github.com/vitpereira/fluxoescolar
+BugReports: https://github.com/vitpereira/fluxoescolar/issues
+VignetteBuilder: knitr
+Config/testthat/edition: 3
