@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite both the software and the working paper."
+authors:
+  - family-names: "Pereira"
+    given-names: "Vitor Azevedo"
+    affiliation: "Instituto de Economia, Universidade Federal do Rio de Janeiro (UFRJ-IE)"
+    email: "vitor.pereira@ie.ufrj.br"
+title: "fluxoescolar: Indicadores de Fluxo Escolar via Painel Longitudinal da PNAD Contínua"
+version: "0.1.0"
+date-released: "2026-06-25"
+url: "https://github.com/vitpereira/fluxoescolar"
+license: MIT
+preferred-citation:
+  type: article
+  authors:
+    - family-names: "Pereira"
+      given-names: "Vitor Azevedo"
+  title: "Indicadores de fluxo escolar via painel longitudinal da PNAD Contínua: três décadas depois do PROFLUXO"
+  year: 2026
+  journal: "Working paper"
+  institution: "UFRJ-IE"
